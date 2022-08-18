@@ -1,9 +1,9 @@
 import { ApolloServer, ExpressContext, gql } from "apollo-server-express";
 import compression from "compression";
-import express,{ Application } from "express";
+import express,{ Application, Response } from "express";
 import { DocumentNode, GraphQLSchema } from "graphql";
 import { makeExecutableSchema } from "graphql-tools";
-import { Server } from "http";
+import { createServer, Server } from "http";
 
 export default class GraphQLServer {
     //Properties
@@ -22,8 +22,9 @@ export default class GraphQLServer {
     }
 
     private configExpress(){
-        const app = express();
-        app.use(compression());
+        this.app = express();
+        this.app.use(compression());
+        this.httpServer = createServer(this.app);
     
     
     }
@@ -72,7 +73,18 @@ export default class GraphQLServer {
         })
     }
 
-    private configRoutes(){}
+    private configRoutes(){
+        this.app.get("/", (_, res: Response) => {
+            res.redirect("/graphql");
+    
+        });
+    
+        this.app.use("/welcome", (_,res: Response)=> {
+            res.send("Bienvenidos al primer Proyecto");
+        });
+    
+    
+    }
 
     listen(callback: (port: number)=>void): void {
         this.httpServer.listen(+this.DEFAULT_PORT,() => {
