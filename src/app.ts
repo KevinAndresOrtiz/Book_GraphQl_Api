@@ -6,53 +6,6 @@ import { makeExecutableSchema } from "graphql-tools";
 import { createServer } from "http";
 
 async function start(){
-    const app = express();
-
-    app.use(compression());
-
-
-    //Defines the types 
-
-    const typeDefs: DocumentNode = gql`
-        type Query {
-            hello: String!
-            helloWithName(name: String): String
-            peopleNumber: Int
-        }
-    `;
-
-    //Resolvers
-    const resolvers = {
-        Query: {
-            hello: (): string => "Hola a la api de graphql",
-            helloWithName: (_: void, args:{name: string}, 
-                            context: any, 
-                            info: object): string => {
-                console.log(info)
-                return `Hola ${args.name} `
-            },
-            peopleNumber: (): number => {
-                return 19283
-            }
-        }
-    }
-
-    const schema: GraphQLSchema = makeExecutableSchema({
-        typeDefs,
-        resolvers
-    });
-
-    const apolloServer: ApolloServer<ExpressContext> = new ApolloServer({
-        schema,
-        introspection: true
-    });
-
-    await apolloServer.start();
-
-    apolloServer.applyMiddleware({
-        app,
-        cors: true
-    })
 
     app.get("/", (_, res: Response) => {
         res.redirect("/graphql");
